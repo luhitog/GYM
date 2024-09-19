@@ -35,6 +35,10 @@ class Adrees
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $created_at = null;
 
+    #[ORM\ManyToOne(inversedBy: 'address')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Users $users = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -127,6 +131,18 @@ class Adrees
     public function setCreatedAt(\DateTimeInterface $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUsers(): ?Users
+    {
+        return $this->users;
+    }
+
+    public function setUsers(?Users $users): static
+    {
+        $this->users = $users;
 
         return $this;
     }

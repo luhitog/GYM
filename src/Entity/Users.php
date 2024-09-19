@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UsersRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -31,6 +33,17 @@ class Users
 
     #[ORM\Column(length: 255)]
     private ?string $return = null;
+
+    /**
+     * @var Collection<int, adrees>
+     */
+    #[ORM\OneToMany(targetEntity: adrees::class, mappedBy: 'users')]
+    private Collection $address;
+
+    public function __construct()
+    {
+        $this->address = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -104,8 +117,33 @@ class Users
         return $this;
     }
 
-    public function getReturn(): ?string
+    /**
+     * @return Collection<int, adrees>
+     */
+    public function getAddress(): Collection
     {
-        return $this->return;
+        return $this->address;
+    }
+
+    public function addAddress(adrees $address): static
+    {
+        if (!$this->address->contains($address)) {
+            $this->address->add($address);
+            $address->setUsers($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAddress(adrees $address): static
+    {
+        if ($this->address->removeElement($address)) {
+            // set the owning side to null (unless already changed)
+            if ($address->getUsers() === $this) {
+                $address->setUsers(null);
+            }
+        }
+
+        return $this;
     }
 }
